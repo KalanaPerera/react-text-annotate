@@ -1,11 +1,18 @@
 import React from 'react'
 
 import Mark from './Mark'
-import {selectionIsEmpty, selectionIsBackwards, splitWithOffsets, hasLabelsInside, selectionHasNoText} from './utils'
+import {
+  selectionIsEmpty,
+  selectionIsBackwards,
+  splitWithOffsets,
+  hasLabelsInside,
+  selectionHasNoText,
+  getCompletedWord,
+  } from './utils'
 import {Span} from './span'
 
 const Split = props => {
-  if (props.mark) return <Mark style={props.markStyle} {...props} />
+  if (props.mark) return <Mark {...props} />
 
   return (
     <span
@@ -31,7 +38,8 @@ type TextBaseProps<T> = {
   getSpan?: (span: TextSpan) => T
   markStyle?: React.CSSProperties
   doubleTaggingOff?: boolean
-  tagNameColor?: string
+  markClass?: string
+  withCompletedWordSelection?: boolean
 }
 
 type TextAnnotatorProps<T> = React.HTMLAttributes<HTMLDivElement> & TextBaseProps<T>
@@ -46,20 +54,27 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
   const handleMouseUp = () => {
     if (!props.editableContent) return
     const selection = window.getSelection()
+   
+    if (selectionIsEmpty(selection) || selectionHasNoText()) return
     
+    if (props.withCompletedWordSelection) {
+      getCompletedWord();
+    }
+
     let start =
       parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) +
       selection.anchorOffset
     let end =
       parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) +
       selection.focusOffset
-    if (selectionIsEmpty(selection) || selectionHasNoText() || isNaN(start) || isNaN(end)) return
+    if ( isNaN(start) || isNaN(end)) return
     if (props.doubleTaggingOff && hasLabelsInside(start, end, props.value)) return
     if (selectionIsBackwards(selection)) {
       ;[start, end] = [end, start]
     }
-  
+    
     props.onChange([...props.value, getSpan({start, end, text: content.slice(start, end)})], getSpan({start, end, text: content.slice(start, end)}))
+    
     window.getSelection().empty()
   }
 
@@ -73,12 +88,12 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
     }
   }
 
-  const {content, value, style, markStyle, tagNameColor} = props
+  const {content, value, style, markStyle, markClass} = props
   const splits = splitWithOffsets(content, value)
   return (
     <div style={style} onMouseUp={handleMouseUp}>
       {splits.map((split, index) => (
-        <Split tagNameColor={tagNameColor} markStyle={markStyle}  key={index} {...split} onClick={handleSplitClick} />
+        <Split class={markClass} key={index} {...split} onClick={handleSplitClick} />
      ))}
     </div>
   )

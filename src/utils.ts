@@ -115,3 +115,32 @@ const mapLabel = x => {
 const selectedLabelsToArray = (labels) => {
   return labels.map(mapLabel).flat();
 };
+
+export const getCompletedWord = () => {
+  const selection = window.getSelection();
+  let range = selection.getRangeAt(0);
+  let node = selection.focusNode;
+  let reg = /^[a-zA-Z\u00C0-\u00FF-z0-9_@/#&+-]*$/;
+
+  const isAllowChar = (char: any) => {
+    return reg.test(char);
+  };
+
+  const isEOF = () => {
+    return node.textContent.length === range.endOffset;
+  };
+
+  const adjustLeft = () => {
+    return range.startOffset === 0 ? 0 : 1;
+  };
+
+  while (range.startOffset > 0 && isAllowChar(range.toString()[0])) {
+    range.setStart(node, range.startOffset - 1);
+  }
+  range.setStart(node, range.startOffset + adjustLeft());
+
+  while (!isEOF() && isAllowChar(range.toString().substr(-1))) {
+    range.setEnd(node, range.endOffset + 1);
+  }
+  range.setEnd(node, range.endOffset - 1);
+};
