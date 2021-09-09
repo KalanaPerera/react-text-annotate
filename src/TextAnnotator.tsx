@@ -54,9 +54,9 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
   const handleMouseUp = () => {
     if (!props.editableContent) return
     const selection = window.getSelection()
-   
+
     if (selectionIsEmpty(selection) || selectionHasNoText()) return
-    
+
     if (props.withCompletedWordSelection) {
       getCompletedWord();
     }
@@ -72,9 +72,9 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
     if (selectionIsBackwards(selection)) {
       ;[start, end] = [end, start]
     }
-    
+
     props.onChange([...props.value, getSpan({start, end, text: content.slice(start, end)})], getSpan({start, end, text: content.slice(start, end)}))
-    
+
     window.getSelection().empty()
   }
 
@@ -82,16 +82,16 @@ const TextAnnotator = <T extends Span>(props: TextAnnotatorProps<T>) => {
     // Default behaviour: Find and remove the matching split.
     const splitIndex = props.value.findIndex(s => s.start === start && s.end === end)
     if (splitIndex >= 0) {
-      props.handleClick 
+      props.handleClick
         ? props.handleClick(splitIndex, getSpan({start, end, text: content.slice(start, end)}))
         : props.onChange([...props.value.slice(0, splitIndex), ...props.value.slice(splitIndex + 1)], getSpan({start, end, text: content.slice(start, end)}) )
     }
   }
 
-  const {content, value, style, markStyle, markClass} = props
+  const {content, value, style, markStyle, markClass, tabIndex} = props
   const splits = splitWithOffsets(content, value)
   return (
-    <div style={style} onMouseUp={handleMouseUp}>
+    <div style={style} onMouseUp={handleMouseUp} tabIndex={tabIndex} >
       {splits.map((split, index) => (
         <Split class={markClass} key={index} {...split} onClick={handleSplitClick} />
      ))}
