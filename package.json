@@ -4,9 +4,7 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "homepage": "https://mcamac.github.io/react-text-annotate",
-  "dependencies": {
-    "lodash.sortby": "^4.7.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
@@ -26,10 +24,18 @@
     "react-hot-loader": "^4.0.1",
     "react-powerplug": "^1.0.0",
     "ts-jest": "^25.3.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "webpack-cli": "^4.8.0",
+    "webpack": "^5.52.0",
+    "webpack-dev-server": "^4.1.1",
+    "fork-ts-checker-webpack-plugin": "^6.3.3",
+    "html-webpack-plugin": "^5.3.2",
+    "babel-polyfill": "^6.26.0",
+    "lodash.sortby": "^4.7.0",
+    "ts-loader": "^9.2.5"
   },
   "scripts": {
-    "dev": "cd example && webpack-dev-server --hot --history-api-fallback --mode development",
+    "dev": "cd example && webpack serve --hot --history-api-fallback --mode development",
     "build": "rm -rf lib && tsc -p ./ --declaration --outDir lib/",
     "prepublish": "npm run build",
     "prepare": "npm run build",
